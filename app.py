@@ -190,7 +190,7 @@ def customer_dashboard():
 # OWNER DASHBOARD
 # -----------------------------
 def owner_dashboard():
-    st.title(f"Shop Owner Panel 👨‍💼 ({st.session_state.username})")
+    st.title(f"Shop Owner Panel 👤 ({st.session_state.username})")
 
     st.header("➕ Add Product")
 
@@ -222,9 +222,32 @@ def owner_dashboard():
             st.image(product["image"])
             st.write(f"{product['name']} - ₹{product['price']}")
 
+            # 🔴 IMPORTANT: Delete button sirf owner ko dikhe
             if st.button("Delete", key=f"del{i}"):
                 st.session_state.products.pop(i)
                 st.rerun()
+
+
+# ----------------------------- CUSTOMER DASHBOARD
+
+   def customer_dashboard():
+    st.title("Customer Dashboard 🛍️")
+
+    st.header("Available Products")
+
+    cols = st.columns(3)
+
+    for i, product in enumerate(st.session_state.products):
+        with cols[i % 3]:
+            st.image(product["image"])
+            st.write(f"{product['name']} - ₹{product['price']}")
+
+            # ✅ Sirf view ya cart option
+            if st.button("Add to Cart", key=f"cart{i}"):
+                st.session_state.cart[product["id"]] = product
+                st.success("Added to cart")
+
+
 
 # -----------------------------
 # MAIN
@@ -240,9 +263,14 @@ def main():
             st.session_state.cart = {}
             st.rerun()
 
+      
         if st.session_state.role == "Customer":
             customer_dashboard()
-        else:
+
+        elif st.session_state.role == "Owner":
             owner_dashboard()
+
+        else:
+            st.error("Invalid role detected")
 
 main()
